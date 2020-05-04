@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using AsyncAwaitBestPractices;
 using Autofac;
-using BackgroundTasks;
 using Foundation;
-using ObjCRuntime;
 using Shiny;
 using UIKit;
 
@@ -18,10 +17,6 @@ namespace GitTrends.iOS
     {
         public override bool FinishedLaunching(UIApplication uiApplication, NSDictionary launchOptions)
         {
-            const double twelveHoursInSeconds = 12 * 60 * 60;
-            //Workaround for BGTask SIGSEV: https://github.com/xamarin/xamarin-macios/issues/7456
-            UIApplication.SharedApplication.SetMinimumBackgroundFetchInterval(twelveHoursInSeconds);
-
             iOSShinyHost.Init(platformBuild: services => services.UseNotifications());
 
             global::Xamarin.Forms.Forms.Init();
@@ -86,24 +81,14 @@ namespace GitTrends.iOS
             using var scope = ContainerService.Container.BeginLifetimeScope();
             var backgroundFetchService = scope.Resolve<BackgroundFetchService>();
 
-            try
-            {
-                var cleanupDatabaseTask = backgroundFetchService.CleanUpDatabase();
-                var notifyTrendingRepositoriesTask = backgroundFetchService.NotifyTrendingRepositories(CancellationToken.None);
-                await Task.WhenAll(cleanupDatabaseTask, notifyTrendingRepositoriesTask).ConfigureAwait(false);
+            var cleanupDatabaseTask = backgroundFetchService.CleanUpDatabase();
+            var notifyTrendingRepositoriesTask = backgroundFetchService.NotifyTrendingRepositories(CancellationToken.None);
+            var results = await Task.WhenAll(cleanupDatabaseTask, notifyTrendingRepositoriesTask).ConfigureAwait(false);
 
-                var isNotifyTrendingRepositoriesSuccessful = await notifyTrendingRepositoriesTask.ConfigureAwait(false);
-
-                if (isNotifyTrendingRepositoriesSuccessful)
-                    completionHandler(UIBackgroundFetchResult.NewData);
-                else
-                    completionHandler(UIBackgroundFetchResult.Failed);
-            }
-            catch (Exception e)
-            {
-                scope.Resolve<AnalyticsService>().Report(e);
+            if (results.Any(x => x is false))
                 completionHandler(UIBackgroundFetchResult.Failed);
-            }
+            else
+                completionHandler(UIBackgroundFetchResult.NewData);
         }
 
         Task HandleLocalNotification(UILocalNotification notification)

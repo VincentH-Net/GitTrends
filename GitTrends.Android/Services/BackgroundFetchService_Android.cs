@@ -23,7 +23,7 @@ namespace GitTrends.Droid
 
         public void Scehdule()
         {
-           
+
         }
     }
 
@@ -53,16 +53,9 @@ namespace GitTrends.Droid
         public override Result DoWork()
         {
             using var scope = ContainerService.Container.BeginLifetimeScope();
-            try
-            {
-                scope.Resolve<BackgroundFetchService>().CleanUpDatabase().GetAwaiter().GetResult();
-                return Result.InvokeSuccess();
-            }
-            catch(Exception e)
-            {
-                scope.Resolve<AnalyticsService>().Report(e);
-                return Result.InvokeFailure();
-            }
+            var isSuccessful = scope.Resolve<BackgroundFetchService>().CleanUpDatabase().GetAwaiter().GetResult();
+
+            return isSuccessful ? Result.InvokeSuccess() : Result.InvokeFailure();
         }
     }
 }

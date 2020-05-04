@@ -3,6 +3,7 @@ using System.Threading;
 using Autofac;
 using BackgroundTasks;
 using GitTrends.iOS;
+using UIKit;
 using Xamarin.Forms;
 
 [assembly: Dependency(typeof(BackgroundFetchService_iOS))]
@@ -14,6 +15,9 @@ namespace GitTrends.iOS
 #pragma warning disable CS0162 // Unreachable code detected
         public void Register()
         {
+            const double twelveHoursInSeconds = 12 * 60 * 60;
+            //Workaround for BGTask SIGSEV: https://github.com/xamarin/xamarin-macios/issues/7456
+            UIApplication.SharedApplication.SetMinimumBackgroundFetchInterval(twelveHoursInSeconds);
             return;
 
             var isNotfyTrendingRepositoriesSuccessful = BGTaskScheduler.Shared.Register(BackgroundFetchService.NotifyTrendingRepositoriesIdentifier, null, task => NotifyTrendingRepositoriesBackgroundTask(task));

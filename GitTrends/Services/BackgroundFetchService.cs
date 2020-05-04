@@ -35,11 +35,20 @@ namespace GitTrends
         public static string NotifyTrendingRepositoriesIdentifier { get; } = $"{Xamarin.Essentials.AppInfo.PackageName}.{nameof(NotifyTrendingRepositories)}";
         public static string CleanUpDatabaseIdentifier { get; } = $"{Xamarin.Essentials.AppInfo.PackageName}.{nameof(CleanUpDatabase)}";
 
-        public async Task CleanUpDatabase()
+        public async Task<bool> CleanUpDatabase()
         {
             using var timedEvent = _analyticsService.TrackTime($"{nameof(CleanUpDatabase)} Triggered");
 
-            await Task.WhenAll(_referringSitesDatabase.DeleteExpiredData(), _repositoryDatabase.DeleteExpiredData()).ConfigureAwait(false);
+            try
+            {
+                await Task.WhenAll(_referringSitesDatabase.DeleteExpiredData(), _repositoryDatabase.DeleteExpiredData()).ConfigureAwait(false);
+                return true;
+            }
+            catch(Exception e)
+            {
+                _analyticsService.Report(e);
+                return false;
+            }
         }
 
         public async Task<bool> NotifyTrendingRepositories(CancellationToken cancellationToken)
