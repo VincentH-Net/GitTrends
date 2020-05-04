@@ -10,8 +10,12 @@ namespace GitTrends.iOS
 {
     public class BackgroundFetchService_iOS : IBackgroundFetchService
     {
+        //Disable this until BGTask SIGSEV is resolve: https://github.com/xamarin/xamarin-macios/issues/7456
+#pragma warning disable CS0162 // Unreachable code detected
         public void Register()
         {
+            return;
+
             var isNotfyTrendingRepositoriesSuccessful = BGTaskScheduler.Shared.Register(BackgroundFetchService.NotifyTrendingRepositoriesIdentifier, null, task => NotifyTrendingRepositoriesBackgroundTask(task));
             var isCleanupDatabaseSuccessful = BGTaskScheduler.Shared.Register(BackgroundFetchService.CleanUpDatabaseIdentifier, null, task => CleanUpDatabaseBackgroundTask(task));
 
@@ -25,8 +29,11 @@ namespace GitTrends.iOS
                 analyticsService.Track($"Register Cleanup Database Failed");
         }
 
+        //Disable this until BGTask SIGSEV is resolve: https://github.com/xamarin/xamarin-macios/issues/7456
         public void Scehdule()
         {
+            return;
+
             var notifyTrendingRepositoriesRequest = new BGProcessingTaskRequest(BackgroundFetchService.NotifyTrendingRepositoriesIdentifier)
             {
                 RequiresNetworkConnectivity = true,
@@ -47,6 +54,7 @@ namespace GitTrends.iOS
             if (!isCleanupDatabaseSuccessful)
                 anayticsService.Report(new ArgumentException(cleanUpDataBaseError.LocalizedDescription));
         }
+#pragma warning restore CS0162 // Unreachable code detected
 
         async void NotifyTrendingRepositoriesBackgroundTask(BGTask task)
         {
