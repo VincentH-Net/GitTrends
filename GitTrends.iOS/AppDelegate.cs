@@ -18,8 +18,9 @@ namespace GitTrends.iOS
     {
         public override bool FinishedLaunching(UIApplication uiApplication, NSDictionary launchOptions)
         {
+            const double twelveHoursInSeconds = 12 * 60 * 60;
             //Workaround for BGTask SIGSEV: https://github.com/xamarin/xamarin-macios/issues/7456
-            UIApplication.SharedApplication.SetMinimumBackgroundFetchInterval(UIApplication.BackgroundFetchIntervalMinimum);
+            UIApplication.SharedApplication.SetMinimumBackgroundFetchInterval(twelveHoursInSeconds);
 
             iOSShinyHost.Init(platformBuild: services => services.UseNotifications());
 
