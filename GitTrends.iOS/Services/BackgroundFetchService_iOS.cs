@@ -33,7 +33,7 @@ namespace GitTrends.iOS
                 analyticsService.Track($"Register Cleanup Database Failed");
         }
 
-        //Disable this until BGTask SIGSEV is resolve: https://github.com/xamarin/xamarin-macios/issues/7456
+        //Disable this until BGTask SIGSEV is resolved: https://github.com/xamarin/xamarin-macios/issues/7456
         public void Scehdule()
         {
             return;

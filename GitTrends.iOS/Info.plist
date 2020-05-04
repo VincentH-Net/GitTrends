@@ -53,14 +53,8 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
-		<string>processing</string>
 	</array>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0.0</string>
-	<key>BGTaskSchedulerPermittedIdentifiers</key>
-	<array>
-		<string>com.minnick.GitTrends.NotifyTrendingRepositories</string>
-		<string>com.minnick.GitTrends.CleanUpDatabase</string>
-	</array>
 </dict>
 </plist>
