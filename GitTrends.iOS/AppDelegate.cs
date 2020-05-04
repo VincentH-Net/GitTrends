@@ -76,8 +76,6 @@ namespace GitTrends.iOS
         //Workaround for BGTask SIGSEV: https://github.com/xamarin/xamarin-macios/issues/7456
         public override async void PerformFetch(UIApplication application, Action<UIBackgroundFetchResult> completionHandler)
         {
-            base.PerformFetch(application, completionHandler);
-
             using var scope = ContainerService.Container.BeginLifetimeScope();
             var backgroundFetchService = scope.Resolve<BackgroundFetchService>();
 
