@@ -4,7 +4,6 @@ using Xamarin.Forms;
 using Xamarin.Forms.Markup;
 using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
-using static Xamarin.Forms.Constraint;
 using static Xamarin.Forms.Markup.Factories;
 using vm = GitTrends.ReferringSitesViewModel;
 
@@ -14,34 +13,20 @@ namespace GitTrends
     {
         void Build() => Content = 
             RelativeLayout (
-                ReferringSitesWithRefresh .Constrain (
-                    Constant (0),
-                    Constant (titleRowHeight),
-                    RelativeToParent (parent => parent.Width),
-                    RelativeToParent (parent => parent.Height - titleRowHeight)),
+                ReferringSitesWithRefresh
+                .Constrain () .X (0) .Y (titleRowHeight) .Width (p => p.Width) .Height (p => p.Height - titleRowHeight),
 
-                iOS ? TitleShadow .Constrain (
-                    Constant (0),
-                    Constant (0),
-                    RelativeToParent (parent => parent.Width),
-                    Constant (titleRowHeight))
-                    : null,
+                iOS ? TitleShadow
+                .Constrain () .X (0) .Y (0) .Width (p => p.Width) .Height (titleRowHeight) : null,
 
-                iOS ? TitleText .Constrain (
-                    Constant (10),
-                    Constant (0))
-                    : null,
+                iOS ? TitleText
+                .Constrain () .X (10) .Y (0) : null,
 
-                iOS ? CloseButton .Constrain (
-                    RelativeToParent (parent => parent.Width - (closeButton?.GetWidth(parent) ?? 0) - 10),
-                    Constant (0),
-                    RelativeToParent (parent => closeButton?.GetWidth(parent) ?? 0))
-                    : null,
+                iOS ? CloseButton
+                .Constrain () .X (p => p.Width - (closeButton?.GetWidth(p) ?? 0) - 10) .Y (0) .Width (p => closeButton?.GetWidth(p) ?? 0) : null,
 
-                storeRatingRequest .Constrain (
-                    Constant (0),
-                    RelativeToParent (parent => parent.Height - storeRatingRequest.GetHeight(parent)),
-                    RelativeToParent (parent => parent.Width))
+                storeRatingRequest
+                .Constrain () .X (0) .Y (p => p.Height - storeRatingRequest.GetHeight(p)) .Width (p => p.Width)
             );
 
         RefreshView ReferringSitesWithRefresh => new RefreshView {

@@ -1,5 +1,8 @@
 ﻿using Bounds = System.Linq.Expressions.Expression<System.Func<Xamarin.Forms.Rectangle>>;
 using Expression = System.Linq.Expressions.Expression<System.Func<double>>;
+using ParentMeasure = System.Func<Xamarin.Forms.RelativeLayout, double>;
+using ViewMeasure = System.Func<Xamarin.Forms.RelativeLayout, Xamarin.Forms.View, double>;
+using static Xamarin.Forms.Constraint;
 
 namespace Xamarin.Forms.Markup
 {
@@ -15,52 +18,73 @@ namespace Xamarin.Forms.Markup
 
     public static class ConstrainViewExtensions
     {
-        public static ConstrainedView UnConstrained<TView>(this TView view) where TView : View
-        => ConstrainedView.FromView(view);
+        public static UnconstrainedView Unconstrained<TView>(this TView view) where TView : View => new UnconstrainedView(view);
 
-        public static ConstrainedView Constrain<TView>(this TView view, Bounds bounds) where TView : View
-        => ConstrainedView.FromBounds(view, bounds);
+        public static ConstraintsConstrainedView Constrain<TView>(this TView view) where TView : View => new ConstraintsConstrainedView(view);
 
-        public static ConstrainedView Constrain<TView>(this TView view, Expression? x = null, Expression? y = null, Expression? width = null, Expression? height = null) where TView : View
-        => ConstrainedView.FromExpressions(view, x, y, width, height);
-
-        public static ConstrainedView Constrain<TView>(this TView view, Constraint? xConstraint = null, Constraint? yConstraint = null, Constraint? widthConstraint = null, Constraint? heightConstraint = null) where TView : View
-        => ConstrainedView.FromConstraints(view, xConstraint, yConstraint, widthConstraint, heightConstraint);
+        public static BoundsConstrainedView Constrain<TView>(this TView view, Bounds bounds) where TView : View => new BoundsConstrainedView(view, bounds);
     }
 
-    public class ConstrainedView
+    public class UnconstrainedView : ConstrainedView
     {
-        enum Kind { None, Bounds, Expressions, Constraints }
+        public UnconstrainedView(View view) : base(view) { }
 
-        readonly View view;
-        Kind kind;
-        Bounds? bounds;
+        public override void AddTo(RelativeLayout layout) => ((Layout<View>)layout).Children.Add(view);
+    }
+
+    public class BoundsConstrainedView : ConstrainedView
+    {
+        readonly Bounds bounds;
+
+        public BoundsConstrainedView(View view, Bounds bounds) : base(view) { this.bounds = bounds; }
+
+        public override void AddTo(RelativeLayout layout) => layout.Children.Add(view, bounds);
+    }
+
+    public class ExpressionsConstrainedView : ConstrainedView
+    {
         Expression? x, y, width, height;
+
+        public ExpressionsConstrainedView(View view) : base(view) { }
+
+        public ConstrainedView X     (Expression x     ) { this.x      = x;      return this; }
+        public ConstrainedView Y     (Expression y     ) { this.y      = y;      return this; }
+        public ConstrainedView Width (Expression width ) { this.width  = width;  return this; }
+        public ConstrainedView Height(Expression height) { this.height = height; return this; }
+
+        public override void AddTo(RelativeLayout layout) => layout.Children.Add(view, x, y, width, height);
+    }
+
+    public class ConstraintsConstrainedView : ConstrainedView
+    {
         Constraint? xConstraint, yConstraint, widthConstraint, heightConstraint;
 
-        ConstrainedView(View view) => this.view = view;
+        public ConstraintsConstrainedView(View view) : base(view) { }
 
-        internal void AddTo(RelativeLayout layout)
-        {
-            switch (kind)
-            {
-                case Kind.None: ((Layout<View>)layout).Children.Add(view); break;
-                case Kind.Bounds: layout.Children.Add(view, bounds); break;
-                case Kind.Expressions: layout.Children.Add(view, x, y, width, height); break;
-                case Kind.Constraints: layout.Children.Add(view, xConstraint, yConstraint, widthConstraint, heightConstraint); break;
-            }
-        }
+        public ConstraintsConstrainedView X     (double x)      { xConstraint      = Constant(x     ); return this; }
+        public ConstraintsConstrainedView Y     (double y)      { yConstraint      = Constant(y     ); return this; }
+        public ConstraintsConstrainedView Width (double width)  { widthConstraint  = Constant(width ); return this; }
+        public ConstraintsConstrainedView Height(double height) { heightConstraint = Constant(height); return this; }
 
-        internal static ConstrainedView FromView(View view)
-            => new ConstrainedView(view) { kind = Kind.None };
+        public ConstraintsConstrainedView X     (ParentMeasure x     ) { xConstraint      = RelativeToParent(x     ); return this; }
+        public ConstraintsConstrainedView Y     (ParentMeasure y     ) { yConstraint      = RelativeToParent(y     ); return this; }
+        public ConstraintsConstrainedView Width (ParentMeasure width ) { widthConstraint  = RelativeToParent(width ); return this; }
+        public ConstraintsConstrainedView Height(ParentMeasure height) { heightConstraint = RelativeToParent(height); return this; }
+               
+        public ConstraintsConstrainedView X     (View view, ViewMeasure x     ) { xConstraint      = RelativeToView(view, x     ); return this; }
+        public ConstraintsConstrainedView Y     (View view, ViewMeasure y     ) { yConstraint      = RelativeToView(view, y     ); return this; }
+        public ConstraintsConstrainedView Width (View view, ViewMeasure width ) { widthConstraint  = RelativeToView(view, width ); return this; }
+        public ConstraintsConstrainedView Height(View view, ViewMeasure height) { heightConstraint = RelativeToView(view, height); return this; }
 
-        internal static ConstrainedView FromBounds(View view, Bounds bounds)
-            => new ConstrainedView(view) { kind = Kind.Bounds, bounds = bounds };
+        public override void AddTo(RelativeLayout layout) => layout.Children.Add(view, xConstraint, yConstraint, widthConstraint, heightConstraint);
+    }
 
-        internal static ConstrainedView FromExpressions(View view, Expression? x, Expression? y, Expression? width, Expression? height)
-            => new ConstrainedView(view) { kind = Kind.Expressions, x = x, y = y, width = width, height = height };
+    public abstract class ConstrainedView
+    {
+        readonly protected View view;
 
-        internal static ConstrainedView FromConstraints(View view, Constraint? xConstraint, Constraint? yConstraint, Constraint? widthConstraint, Constraint? heightConstraint)
-            => new ConstrainedView(view) { kind = Kind.Constraints, xConstraint = xConstraint, yConstraint = yConstraint, widthConstraint = widthConstraint, heightConstraint = heightConstraint };
+        protected ConstrainedView(View view) => this.view = view;
+
+        public abstract void AddTo(RelativeLayout layout);
     }
 }
