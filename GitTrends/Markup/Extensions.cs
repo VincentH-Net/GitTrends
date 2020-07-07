@@ -16,7 +16,7 @@ namespace GitTrends
 
         public static bool IsNullOrEmpty(this IEnumerable? enumerable) => !enumerable?.GetEnumerator().MoveNext() ?? true;
 
-        public static double Width(this RelativeLayout parent, View? child) => child?.GetWidth(parent) ?? 0;
-        public static double Height(this RelativeLayout parent, View? child) => child?.GetHeight(parent) ?? 0;
+        public static double WidthOf(this RelativeLayout parent, View? child) => child?.GetWidth(parent) ?? 0;
+        public static double HeightOf(this RelativeLayout parent, View? child) => child?.GetHeight(parent) ?? 0;
     }
 }

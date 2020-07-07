@@ -25,11 +25,11 @@ namespace GitTrends
                 .Constrain () .X (10) .Y (0) : null,
 
                 iOS ? CloseButton
-                .Constrain () .X (p => p.Width - p.Width(closeButton) - 10) .Y (0) 
-                              .Width (p => p.Width(closeButton)) : null,
+                .Constrain () .X (p => p.Width - p.WidthOf(closeButton) - 10) .Y (0) 
+                              .Width (p => p.WidthOf(closeButton)) : null,
 
                 storeRatingRequest
-                .Constrain () .X (0) .Y (p => p.Height - storeRatingRequest.GetHeight(p)) 
+                .Constrain () .X (0) .Y (p => p.Height - p.HeightOf(storeRatingRequest)) 
                               .Width (p => p.Width)
             );
 
