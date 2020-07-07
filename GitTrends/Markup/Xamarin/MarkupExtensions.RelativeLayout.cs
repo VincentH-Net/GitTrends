@@ -57,26 +57,26 @@ namespace Xamarin.Forms.Markup
 
     public class ConstraintsConstrainedView : ConstrainedView
     {
-        Constraint? xConstraint, yConstraint, widthConstraint, heightConstraint;
+        Constraint? x, y, width, height;
 
         public ConstraintsConstrainedView(View view) : base(view) { }
 
-        public ConstraintsConstrainedView X     (double x)      { xConstraint      = Constant(x     ); return this; }
-        public ConstraintsConstrainedView Y     (double y)      { yConstraint      = Constant(y     ); return this; }
-        public ConstraintsConstrainedView Width (double width)  { widthConstraint  = Constant(width ); return this; }
-        public ConstraintsConstrainedView Height(double height) { heightConstraint = Constant(height); return this; }
+        public ConstraintsConstrainedView X     (double x)      { this.x      = Constant(x); return this; }
+        public ConstraintsConstrainedView Y     (double y)      { this.y      = Constant(y); return this; }
+        public ConstraintsConstrainedView Width (double width)  { this.width  = Constant(width); return this; }
+        public ConstraintsConstrainedView Height(double height) { this.height = Constant(height); return this; }
 
-        public ConstraintsConstrainedView X     (ParentMeasure x     ) { xConstraint      = RelativeToParent(x     ); return this; }
-        public ConstraintsConstrainedView Y     (ParentMeasure y     ) { yConstraint      = RelativeToParent(y     ); return this; }
-        public ConstraintsConstrainedView Width (ParentMeasure width ) { widthConstraint  = RelativeToParent(width ); return this; }
-        public ConstraintsConstrainedView Height(ParentMeasure height) { heightConstraint = RelativeToParent(height); return this; }
+        public ConstraintsConstrainedView X     (ParentMeasure x     ) { this.x      = RelativeToParent(x); return this; }
+        public ConstraintsConstrainedView Y     (ParentMeasure y     ) { this.y      = RelativeToParent(y); return this; }
+        public ConstraintsConstrainedView Width (ParentMeasure width ) { this.width  = RelativeToParent(width); return this; }
+        public ConstraintsConstrainedView Height(ParentMeasure height) { this.height = RelativeToParent(height); return this; }
                
-        public ConstraintsConstrainedView X     (View view, ViewMeasure x     ) { xConstraint      = RelativeToView(view, x     ); return this; }
-        public ConstraintsConstrainedView Y     (View view, ViewMeasure y     ) { yConstraint      = RelativeToView(view, y     ); return this; }
-        public ConstraintsConstrainedView Width (View view, ViewMeasure width ) { widthConstraint  = RelativeToView(view, width ); return this; }
-        public ConstraintsConstrainedView Height(View view, ViewMeasure height) { heightConstraint = RelativeToView(view, height); return this; }
+        public ConstraintsConstrainedView X     (View view, ViewMeasure x     ) { this.x      = RelativeToView(view, x     ); return this; }
+        public ConstraintsConstrainedView Y     (View view, ViewMeasure y     ) { this.y      = RelativeToView(view, y     ); return this; }
+        public ConstraintsConstrainedView Width (View view, ViewMeasure width ) { this.width  = RelativeToView(view, width ); return this; }
+        public ConstraintsConstrainedView Height(View view, ViewMeasure height) { this.height = RelativeToView(view, height); return this; }
 
-        public override void AddTo(RelativeLayout layout) => layout.Children.Add(view, xConstraint, yConstraint, widthConstraint, heightConstraint);
+        public override void AddTo(RelativeLayout layout) => layout.Children.Add(view, x, y, width, height);
     }
 
     public abstract class ConstrainedView

@@ -14,19 +14,23 @@ namespace GitTrends
         void Build() => Content = 
             RelativeLayout (
                 ReferringSitesWithRefresh
-                .Constrain () .X (0) .Y (titleRowHeight) .Width (p => p.Width) .Height (p => p.Height - titleRowHeight),
+                .Constrain () .X (0) .Y (titleRowHeight) 
+                              .Width (p => p.Width) .Height (p => p.Height - titleRowHeight),
 
                 iOS ? TitleShadow
-                .Constrain () .X (0) .Y (0) .Width (p => p.Width) .Height (titleRowHeight) : null,
+                .Constrain () .X (0) .Y (0) 
+                              .Width (p => p.Width) .Height (titleRowHeight) : null,
 
                 iOS ? TitleText
                 .Constrain () .X (10) .Y (0) : null,
 
                 iOS ? CloseButton
-                .Constrain () .X (p => p.Width - (closeButton?.GetWidth(p) ?? 0) - 10) .Y (0) .Width (p => closeButton?.GetWidth(p) ?? 0) : null,
+                .Constrain () .X (p => p.Width - (closeButton?.GetWidth(p) ?? 0) - 10) .Y (0) 
+                              .Width (p => closeButton?.GetWidth(p) ?? 0) : null,
 
                 storeRatingRequest
-                .Constrain () .X (0) .Y (p => p.Height - storeRatingRequest.GetHeight(p)) .Width (p => p.Width)
+                .Constrain () .X (0) .Y (p => p.Height - storeRatingRequest.GetHeight(p)) 
+                              .Width (p => p.Width)
             );
 
         RefreshView ReferringSitesWithRefresh => new RefreshView {
