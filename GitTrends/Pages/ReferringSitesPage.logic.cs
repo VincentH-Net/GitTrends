@@ -24,7 +24,7 @@ namespace GitTrends
         const int titleTopMargin = 10;
         readonly bool iOS = Device.RuntimePlatform is Device.iOS;
         readonly int titleRowHeight = Device.RuntimePlatform is Device.iOS ? 50 : 0;
-        RefreshView? _refreshView;
+        RefreshView? refreshView;
         Button? closeButton;
 
         public ReferringSitesPage(DeepLinkingService deepLinkingService,
@@ -52,10 +52,10 @@ namespace GitTrends
         {
             base.OnAppearing();
 
-            if (_refreshView?.Content is CollectionView collectionView
+            if (refreshView?.Content is CollectionView collectionView
                 && collectionView.ItemsSource.IsNullOrEmpty())
             {
-                _refreshView.IsRefreshing = true;
+                refreshView.IsRefreshing = true;
                 reviewService.TryRequestReviewPrompt();
             }
         }
@@ -115,7 +115,7 @@ namespace GitTrends
             const int animationDuration = 300;
 
             await Task.WhenAll(storeRatingRequest.TranslateTo(0, storeRatingRequest.Height, animationDuration),
-                                storeRatingRequest.ScaleTo(0, animationDuration));
+                               storeRatingRequest.ScaleTo(0, animationDuration));
 
             storeRatingRequest.IsVisible = false;
             storeRatingRequest.Scale = 1;

@@ -49,7 +49,7 @@ namespace GitTrends
             CommandParameter = (repository.OwnerLogin, repository.Name, repository.Url, refreshViewCancelltionTokenSource.Token),
             Content = ReferringSites
         }  .DynamicResource (RefreshView.RefreshColorProperty, nameof(BaseTheme.PullToRefreshColor))
-           .Assign (out _refreshView)
+           .Assign (out refreshView)
            .Bind (RefreshView.CommandProperty, nameof(vm.RefreshCommand))
            .Bind (RefreshView.IsRefreshingProperty, nameof(vm.IsRefreshing));
 
