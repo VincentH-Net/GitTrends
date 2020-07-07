@@ -33,20 +33,20 @@ namespace GitTrends
                     : null,
 
                 iOS ? CloseButton .Constrain (
-                    RelativeToParent (parent => parent.Width - (_closeButton?.GetWidth(parent) ?? 0) - 10),
+                    RelativeToParent (parent => parent.Width - (closeButton?.GetWidth(parent) ?? 0) - 10),
                     Constant (0),
-                    RelativeToParent (parent => _closeButton?.GetWidth(parent) ?? 0))
+                    RelativeToParent (parent => closeButton?.GetWidth(parent) ?? 0))
                     : null,
 
-                StoreRatingRequest .Constrain (
+                storeRatingRequest .Constrain (
                     Constant (0),
-                    RelativeToParent (parent => parent.Height - StoreRatingRequest.GetHeight(parent)),
+                    RelativeToParent (parent => parent.Height - storeRatingRequest.GetHeight(parent)),
                     RelativeToParent (parent => parent.Width))
             );
 
         RefreshView ReferringSitesWithRefresh => new RefreshView {
             AutomationId = ReferringSitesPageAutomationIds.RefreshView,
-            CommandParameter = (_repository.OwnerLogin, _repository.Name, _repository.Url, _refreshViewCancelltionTokenSource.Token),
+            CommandParameter = (repository.OwnerLogin, repository.Name, repository.Url, refreshViewCancelltionTokenSource.Token),
             Content = ReferringSites
         }  .DynamicResource (RefreshView.RefreshColorProperty, nameof(BaseTheme.PullToRefreshColor))
            .Assign (out _refreshView)
@@ -72,7 +72,7 @@ namespace GitTrends
 
         BoxView TitleShadow => new BoxView { }
             .DynamicResource (BackgroundColorProperty, nameof(BaseTheme.CardSurfaceColor))
-            .Invoke (titleShadow => { if (IsLightTheme(_themeService.Preference)) titleShadow.On<iOS>()
+            .Invoke (titleShadow => { if (IsLightTheme(themeService.Preference)) titleShadow.On<iOS>()
                 .SetIsShadowEnabled (true)
                 .SetShadowColor (Color.Gray)
                 .SetShadowOffset (new Size(0, 1))
@@ -92,7 +92,7 @@ namespace GitTrends
            .DynamicResources (
                (Button.TextColorProperty, nameof(BaseTheme.CloseButtonTextColor)), 
                (BackgroundColorProperty , nameof(BaseTheme.CloseButtonBackgroundColor)))
-           .Assign (out _closeButton)
+           .Assign (out closeButton)
            .Invoke (closeButton => closeButton.Clicked += HandleCloseButtonClicked)
            .End () .CenterVertical () .Margins (top: titleTopMargin) .Height (titleRowHeight * 3 / 5) .Padding (5, 0);
     }

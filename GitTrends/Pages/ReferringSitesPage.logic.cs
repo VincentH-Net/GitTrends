@@ -13,19 +13,19 @@ namespace GitTrends
 {
     partial class ReferringSitesPage : BaseContentPage<ReferringSitesViewModel>
     {
-        readonly StoreRatingRequestView StoreRatingRequest = new StoreRatingRequestView();
-        readonly CancellationTokenSource _refreshViewCancelltionTokenSource = new CancellationTokenSource();
+        readonly StoreRatingRequestView storeRatingRequest = new StoreRatingRequestView();
+        readonly CancellationTokenSource refreshViewCancelltionTokenSource = new CancellationTokenSource();
 
-        readonly Repository _repository;
-        readonly ThemeService _themeService;
-        readonly ReviewService _reviewService;
-        readonly DeepLinkingService _deepLinkingService;
+        readonly Repository repository;
+        readonly ThemeService themeService;
+        readonly ReviewService reviewService;
+        readonly DeepLinkingService deepLinkingService;
 
         const int titleTopMargin = 10;
         readonly bool iOS = Device.RuntimePlatform is Device.iOS;
         readonly int titleRowHeight = Device.RuntimePlatform is Device.iOS ? 50 : 0;
         RefreshView? _refreshView;
-        Button? _closeButton;
+        Button? closeButton;
 
         public ReferringSitesPage(DeepLinkingService deepLinkingService,
                                   ReferringSitesViewModel referringSitesViewModel,
@@ -37,10 +37,10 @@ namespace GitTrends
         {
             Title = PageTitles.ReferringSitesPage;
 
-            _repository = repository;
-            _themeService = themeService;
-            _reviewService = reviewService;
-            _deepLinkingService = deepLinkingService;
+            this.repository = repository;
+            this.themeService = themeService;
+            this.reviewService = reviewService;
+            this.deepLinkingService = deepLinkingService;
 
             ViewModel.PullToRefreshFailed += HandlePullToRefreshFailed;
             reviewService.ReviewCompleted += HandleReviewCompleted;
@@ -56,7 +56,7 @@ namespace GitTrends
                 && collectionView.ItemsSource.IsNullOrEmpty())
             {
                 _refreshView.IsRefreshing = true;
-                _reviewService.TryRequestReviewPrompt();
+                reviewService.TryRequestReviewPrompt();
             }
         }
 
@@ -64,8 +64,8 @@ namespace GitTrends
         {
             base.OnDisappearing();
 
-            _refreshViewCancelltionTokenSource.Cancel();
-            StoreRatingRequest.IsVisible = false;
+            refreshViewCancelltionTokenSource.Cancel();
+            storeRatingRequest.IsVisible = false;
         }
 
         static bool IsLightTheme(PreferredTheme preferredTheme) => preferredTheme is PreferredTheme.Light || preferredTheme is PreferredTheme.Default && Xamarin.Forms.Application.Current.RequestedTheme is OSAppTheme.Light;
@@ -85,7 +85,7 @@ namespace GitTrends
                     { nameof(ReferringSiteModel) + nameof(ReferringSiteModel.ReferrerUri), referingSite.ReferrerUri.ToString() }
                 });
 
-                await _deepLinkingService.OpenBrowser(referingSite.ReferrerUri);
+                await deepLinkingService.OpenBrowser(referingSite.ReferrerUri);
             }
         }
 
@@ -104,7 +104,7 @@ namespace GitTrends
                     {
                         var isAccepted = await DisplayAlert(e.Title, e.Message, e.Accept, e.Cancel);
                         if (isAccepted)
-                            await _deepLinkingService.OpenBrowser(GitHubConstants.GitHubRateLimitingDocs);
+                            await deepLinkingService.OpenBrowser(GitHubConstants.GitHubRateLimitingDocs);
                     }
                 }
             });
@@ -114,12 +114,12 @@ namespace GitTrends
         {
             const int animationDuration = 300;
 
-            await Task.WhenAll(StoreRatingRequest.TranslateTo(0, StoreRatingRequest.Height, animationDuration),
-                                StoreRatingRequest.ScaleTo(0, animationDuration));
+            await Task.WhenAll(storeRatingRequest.TranslateTo(0, storeRatingRequest.Height, animationDuration),
+                                storeRatingRequest.ScaleTo(0, animationDuration));
 
-            StoreRatingRequest.IsVisible = false;
-            StoreRatingRequest.Scale = 1;
-            StoreRatingRequest.TranslationY = 0;
+            storeRatingRequest.IsVisible = false;
+            storeRatingRequest.Scale = 1;
+            storeRatingRequest.TranslationY = 0;
         });
 
         async void HandleCloseButtonClicked(object sender, EventArgs e) => await Navigation.PopModalAsync();
