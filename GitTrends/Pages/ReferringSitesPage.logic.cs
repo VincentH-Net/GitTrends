@@ -13,7 +13,7 @@ namespace GitTrends
 {
     partial class ReferringSitesPage : BaseContentPage<ReferringSitesViewModel>
     {
-        readonly StoreRatingRequestView _storeRatingRequestView = new StoreRatingRequestView();
+        readonly StoreRatingRequestView StoreRatingRequest = new StoreRatingRequestView();
         readonly CancellationTokenSource _refreshViewCancelltionTokenSource = new CancellationTokenSource();
 
         readonly Repository _repository;
@@ -65,7 +65,7 @@ namespace GitTrends
             base.OnDisappearing();
 
             _refreshViewCancelltionTokenSource.Cancel();
-            _storeRatingRequestView.IsVisible = false;
+            StoreRatingRequest.IsVisible = false;
         }
 
         static bool IsLightTheme(PreferredTheme preferredTheme) => preferredTheme is PreferredTheme.Light || preferredTheme is PreferredTheme.Default && Xamarin.Forms.Application.Current.RequestedTheme is OSAppTheme.Light;
@@ -114,12 +114,12 @@ namespace GitTrends
         {
             const int animationDuration = 300;
 
-            await Task.WhenAll(_storeRatingRequestView.TranslateTo(0, _storeRatingRequestView.Height, animationDuration),
-                                _storeRatingRequestView.ScaleTo(0, animationDuration));
+            await Task.WhenAll(StoreRatingRequest.TranslateTo(0, StoreRatingRequest.Height, animationDuration),
+                                StoreRatingRequest.ScaleTo(0, animationDuration));
 
-            _storeRatingRequestView.IsVisible = false;
-            _storeRatingRequestView.Scale = 1;
-            _storeRatingRequestView.TranslationY = 0;
+            StoreRatingRequest.IsVisible = false;
+            StoreRatingRequest.Scale = 1;
+            StoreRatingRequest.TranslationY = 0;
         });
 
         async void HandleCloseButtonClicked(object sender, EventArgs e) => await Navigation.PopModalAsync();

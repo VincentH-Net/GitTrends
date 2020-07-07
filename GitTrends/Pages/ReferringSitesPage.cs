@@ -14,11 +14,11 @@ namespace GitTrends
     {
         void Build() => Content = 
             RelativeLayout (
-                RefreshView .Constrain (
+                ReferringSitesWithRefresh .Constrain (
                     Constant (0),
-                    Constant (titleRowHeight), //Set to `0` following this bug fix: https://github.com/xamarin/Xamarin.Forms/issues/9879
+                    Constant (titleRowHeight),
                     RelativeToParent (parent => parent.Width),
-                    RelativeToParent (parent => parent.Height - titleRowHeight)), //Set to `parent => parent.Height` following this bug fix: https://github.com/xamarin/Xamarin.Forms/issues/9879
+                    RelativeToParent (parent => parent.Height - titleRowHeight)),
 
                 iOS ? TitleShadow .Constrain (
                     Constant (0),
@@ -27,7 +27,7 @@ namespace GitTrends
                     Constant (titleRowHeight))
                     : null,
 
-                iOS ? TitleLabel .Constrain (
+                iOS ? TitleText .Constrain (
                     Constant (10),
                     Constant (0))
                     : null,
@@ -38,34 +38,35 @@ namespace GitTrends
                     RelativeToParent (parent => _closeButton?.GetWidth(parent) ?? 0))
                     : null,
 
-                _storeRatingRequestView .Constrain (
+                StoreRatingRequest .Constrain (
                     Constant (0),
-                    RelativeToParent (parent => parent.Height - _storeRatingRequestView.GetHeight(parent)),
+                    RelativeToParent (parent => parent.Height - StoreRatingRequest.GetHeight(parent)),
                     RelativeToParent (parent => parent.Width))
             );
 
-        RefreshView RefreshView => new RefreshView {
+        RefreshView ReferringSitesWithRefresh => new RefreshView {
             AutomationId = ReferringSitesPageAutomationIds.RefreshView,
             CommandParameter = (_repository.OwnerLogin, _repository.Name, _repository.Url, _refreshViewCancelltionTokenSource.Token),
-            Content = CollectionView
+            Content = ReferringSites
         }  .DynamicResource (RefreshView.RefreshColorProperty, nameof(BaseTheme.PullToRefreshColor))
            .Assign (out _refreshView)
            .Bind (RefreshView.CommandProperty, nameof(vm.RefreshCommand))
            .Bind (RefreshView.IsRefreshingProperty, nameof(vm.IsRefreshing));
 
-        CollectionView CollectionView => new CollectionView {
+        CollectionView ReferringSites => new CollectionView {
             AutomationId = ReferringSitesPageAutomationIds.CollectionView,
             BackgroundColor = Color.Transparent,
             ItemTemplate = new ReferringSitesDataTemplate(),
             SelectionMode = SelectionMode.Single,
             ItemsLayout = new LinearItemsLayout(ItemsLayoutOrientation.Vertical),
+
             //Set iOS Header to `new BoxView { HeightRequest = titleRowHeight + titleTopMargin }` following this bug fix: https://github.com/xamarin/Xamarin.Forms/issues/9879
             Header = iOS ? null : new BoxView { HeightRequest = ReferringSitesDataTemplate.BottomPadding },
             Footer = iOS ? null : new BoxView { HeightRequest = ReferringSitesDataTemplate.TopPadding },
             EmptyView = new EmptyDataView ("EmptyReferringSitesList", ReferringSitesPageAutomationIds.EmptyDataView)
-                            .Bind (IsVisibleProperty, nameof(vm.IsEmptyDataViewEnabled))
-                            .Bind (EmptyDataView.TitleProperty, nameof(vm.EmptyDataViewTitle))
-                            .Bind (EmptyDataView.DescriptionProperty, nameof(vm.EmptyDataViewDescription))
+                .Bind (IsVisibleProperty, nameof(vm.IsEmptyDataViewEnabled))
+                .Bind (EmptyDataView.TitleProperty, nameof(vm.EmptyDataViewTitle))
+                .Bind (EmptyDataView.DescriptionProperty, nameof(vm.EmptyDataViewDescription))
         }  .Invoke (collectionView => collectionView.SelectionChanged += HandleCollectionViewSelectionChanged)
            .Bind (nameof(vm.MobileReferringSitesList));
 
@@ -78,7 +79,7 @@ namespace GitTrends
                 .SetShadowOpacity (0.5)
                 .SetShadowRadius (4); });
 
-        Label TitleLabel => new Label { 
+        Label TitleText => new Label { 
             Text = PageTitles.ReferringSitesPage
         }  .Font (family: FontFamilyConstants.RobotoMedium, size: 30)
            .DynamicResource (Label.TextColorProperty, nameof(BaseTheme.TextColor))
